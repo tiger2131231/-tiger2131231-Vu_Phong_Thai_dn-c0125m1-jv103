@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    let n;
+    do {
+        n = prompt("Nhập số lượng phần tử của mảng (tối đa 50):");
+        n = Number(n);
+    } while (isNaN(n) || n <= 0 || n > 50);
+    let arr = [];
+    for (let i = 0; i < n; i++) {
+        let value;
+        do {
+            value = prompt(`Nhập phần tử thứ ${i + 1}:`);
+        } while (isNaN(value));
+        arr.push(Number(value));
+    }
+
+    alert("Mảng sau khi nhập: " + arr.join(", "));
+
+    let arr1 = arr.filter(num => num % 3 === 0);
+
+    if (arr1.length === 0) {
+        alert("Không có số nào chia hết cho 3.");
+    } else {
+        let sum = arr1.reduce((total, num) => total + num, 0);
+        let average = sum / arr1.length;
+        alert("Trung bình cộng các số chia hết cho 3: " + average);
+    }
+
+
+</script>
+</body>
+</html>

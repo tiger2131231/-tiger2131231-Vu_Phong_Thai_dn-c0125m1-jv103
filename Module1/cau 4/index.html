@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Công nhân</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<div class="container mx-auto p-5">
+    <h1 class="text-xl font-bold mb-4">Quản lý Công nhân</h1>
+    <form id="workerForm" onsubmit="saveWorker(); return false;" class="mb-5">
+        <input class="border p-2" type="text" id="name" placeholder="Họ và tên" required>
+        <input class="border p-2" type="date" id="dob" required>
+        <input class="border p-2" type="text" id="address" placeholder="Địa chỉ" required>
+        <input class="border p-2" type="number" id="salary" placeholder="Lương" required>
+        <input class="border p-2" type="text" id="position" placeholder="Chức vụ" required>
+        <button class="bg-blue-500 text-white p-2" type="submit">Lưu</button>
+    </form>
+    <table class="border-collapse border border-gray-400 w-full">
+        <thead>
+        <tr>
+            <th class="border border-gray-300">STT</th>
+            <th class="border border-gray-300">Họ và tên</th>
+            <th class="border border-gray-300">Ngày sinh</th>
+            <th class="border border-gray-300">Địa chỉ</th>
+            <th class="border border-gray-300">Lương</th>
+            <th class="border border-gray-300">Chức vụ</th>
+            <th class="border border-gray-300">Hành động</th>
+        </tr>
+        </thead>
+        <tbody id="workerTable"></tbody>
+    </table>
+</div>
+<script>
+    class Worker {
+        constructor(name, dob, address, salary, position) {
+            this.name = name;
+            this.dob = dob;
+            this.address = address;
+            this.salary = parseFloat(salary);  // Đảm bảo salary là số
+            this.position = position;
+        }
+    }
+
+    let workers = [
+        new Worker("Trương Tấn A", "1997-11-11", "Quảng Đông", 2000, "Teacher"),
+        new Worker("Trương Tấn B", "1993-11-11", "Đà Nẵng", 2000, "Worker"),
+        new Worker("Trương Tấn C", "1998-11-11", "Huế", 2000, "Manager")
+    ];
+
+    let editIndex = -1;
+
+    function formatDate(dob) {
+        return new Date(dob).toLocaleDateString('vi-VN');
+    }
+
+    function sortByName(a, b) {
+        return a.name.split(" ").slice(-1)[0].localeCompare(b.name.split(" ").slice(-1)[0]);
+    }
+
+    function displayWorkers() {
+        workers.sort(sortByName);
+        const table = document.getElementById("workerTable");
+
+        if (workers.length === 0) {
+            table.innerHTML = `<tr><td colspan="7" class="text-center text-red-500">Danh sách trống</td></tr>`;
+            return;
+        }
+
+        table.innerHTML = workers.map((worker, index) => `
+        <tr>
+            <td class="border border-gray-300 text-center">${index + 1}</td>
+            <td class="border border-gray-300">${worker.name}</td>
+            <td class="border border-gray-300 text-center">${formatDate(worker.dob)}</td>
+            <td class="border border-gray-300">${worker.address}</td>
+            <td class="border border-gray-300 text-right">${worker.salary.toLocaleString()} VNĐ</td>
+            <td class="border border-gray-300">${worker.position}</td>
+            <td class="border border-gray-300 text-center">
+                <button class="bg-yellow-500 text-white px-2 py-1" onclick="editWorker(${index})">Sửa</button>
+                <button class="bg-red-500 text-white px-2 py-1" onclick="deleteWorker(${index})">Xóa</button>
+            </td>
+        </tr>
+    `).join('');
+    }
+
+    function saveWorker() {
+        const name = document.getElementById("name").value.trim();
+        const dob = document.getElementById("dob").value;
+        const address = document.getElementById("address").value.trim();
+        const salary = document.getElementById("salary").value.trim();
+        const position = document.getElementById("position").value.trim();
+
+
+        if (!name || !dob || !address || !salary || !position || isNaN(salary) || salary < 0) {
+            alert("Vui lòng nhập đầy đủ và đúng thông tin!");
+            return;
+        }
+
+        if (editIndex !== -1) {
+            workers[editIndex] = new Worker(name, dob, address, salary, position);
+            alert("Cập nhật thành công!");
+        } else {
+            workers.push(new Worker(name, dob, address, salary, position));
+            alert("Thêm công nhân thành công!");
+        }
+
+        displayWorkers();
+        document.getElementById("workerForm").reset();
+        editIndex = -1;
+    }
+
+    function deleteWorker(index) {
+        if (confirm(`Bạn có muốn xóa công nhân "${workers[index].name}" không?`)) {
+            workers.splice(index, 1);
+            displayWorkers();
+        }
+    }
+
+    function editWorker(index) {
+        editIndex = index;
+        document.getElementById("name").value = workers[index].name;
+        document.getElementById("dob").value = workers[index].dob;
+        document.getElementById("address").value = workers[index].address;
+        document.getElementById("salary").value = workers[index].salary;
+        document.getElementById("position").value = workers[index].position;
+        alert("Bạn đang chỉnh sửa công nhân, vui lòng nhập lại thông tin!");
+    }
+
+    displayWorkers();
+
+</script>
+</body>
+</html>
